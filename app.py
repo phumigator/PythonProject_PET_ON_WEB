@@ -17,7 +17,7 @@ app = dash.Dash(
     title='ZCYC',
     suppress_callback_exceptions=True   # <-- добавляем эту строку
 )
-
+server = app.server
 # Устанавливаем макет
 app.layout = create_layout()
 
