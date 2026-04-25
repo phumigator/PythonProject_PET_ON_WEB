@@ -64,9 +64,9 @@ def create_layout():
                             html.H6("Диапазон доходности (%):", className="mt-4"),
                             dcc.RangeSlider(
                                 id='y-range-slider',
-                                min=-10, max=20, step=0.5,
-                                marks={i: str(i) for i in [-10, -5, 0, 5, 10, 15, 20]},
-                                value=[-2, 10],
+                                min=-10, max=50, step=0.5,
+                                marks={i: str(i) for i in [-10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]},
+                                value=[-2, 20],
                                 tooltip={"placement": "bottom", "always_visible": True}
                             ),
                             dbc.Row([
@@ -133,6 +133,17 @@ def create_layout():
                                     dbc.Checklist(
                                         id='show-title',
                                         options=[{"label": "Показывать заголовок", "value": True}],
+                                        value=[True],
+                                        switch=True,
+                                        className="mt-2"
+                                    )
+                                ], width=12)
+                            ]),
+                            dbc.Row([
+                                dbc.Col([
+                                    dbc.Checklist(
+                                        id='show-grid',
+                                        options=[{"label": "Показать сетку", "value": True}],
                                         value=[True],
                                         switch=True,
                                         className="mt-2"
@@ -256,7 +267,7 @@ def create_layout():
                         ])
                     ], className="mb-4"),
 
-                    # Параметры модели ZCYC
+                    # Параметры модели ZCYC (раскомментировано)
                     dbc.Card([
                         dbc.CardHeader("Параметры модели ZCYC", className="bg-warning text-dark"),
                         dbc.CardBody([
@@ -264,8 +275,9 @@ def create_layout():
                                 id='params-table',
                                 columns=[
                                     {"name": "Параметр", "id": "parameter"},
-                                    {"name": "Значение", "id": "value"},
-                                    {"name": "Описание", "id": "description"}
+                                    {"name": "Значение", "id": "value"}
+                                    # ,
+                                    # {"name": "Описание", "id": "description"}
                                 ],
                                 data=[],  # будет заполнено колбэком
                                 style_cell={'textAlign': 'left', 'padding': '10px', 'fontSize': '12px'},
@@ -275,7 +287,7 @@ def create_layout():
                                 ]
                             )
                         ])
-                    ])
+                    ], className="mb-4")
                 ], style=SIDEBAR_STYLE)
             ], width=3),
 
@@ -335,8 +347,8 @@ def create_layout():
                                         {"name": "Срок (лет)", "id": "Срок (лет)", "editable": False},
                                         {"name": "Доходность (%)", "id": "Доходность (%)", "editable": False}
                                     ],
-                                    page_size=5,
-                                    style_table={'overflowX': 'auto', 'height': '300px', 'overflowY': 'auto'},
+                                    page_size=10,
+                                    style_table={'overflowX': 'auto', 'height': '400px', 'overflowY': 'auto'},
                                     style_cell={'textAlign': 'center', 'padding': '8px'},
                                     style_header={'backgroundColor': 'rgb(200, 200, 200)', 'fontWeight': 'bold'},
                                     sort_action='native',

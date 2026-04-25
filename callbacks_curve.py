@@ -25,6 +25,7 @@ def register_callbacks(app):
     def update_data(n_clicks, n_intervals):
         ctx = callback_context
         if not ctx.triggered:
+            # Используем default_zcyc_data, если нет триггера
             date_display = f"Дата: {default_zcyc_data['tradedate'].iloc[0]}"
             time_display = f"Время: {default_zcyc_data['tradetime'].iloc[0]}"
             params_data = [
@@ -43,6 +44,7 @@ def register_callbacks(app):
 
         df_data_new, error = fetch_zcyc_data()
         if df_data_new is None:
+            # Если ошибка, возвращаем no_update для всех выходов
             return no_update, no_update, no_update, no_update
 
         date_display = f"Дата: {df_data_new['tradedate'].iloc[0]}"
@@ -97,16 +99,18 @@ def register_callbacks(app):
          Input('show-point-labels', 'value'),
          Input('show-legend', 'value'),
          Input('show-title', 'value'),
+         Input('show-grid', 'value'),           # <-- добавлен переключатель сетки
          Input('label-mode', 'value'),
          Input('x-range-slider', 'value')]
     )
     def update_plots(curve_data, y_range, line_color, line_width, line_style,
                      raw_data, custom_points, show_labels, show_legend, show_title,
-                     label_mode, x_range):
+                     show_grid, label_mode, x_range):
         # Преобразование чекбоксов
         show_labels = bool(show_labels and show_labels[0]) if isinstance(show_labels, list) else bool(show_labels)
         show_legend = bool(show_legend and show_legend[0]) if isinstance(show_legend, list) else bool(show_legend)
         show_title = bool(show_title and show_title[0]) if isinstance(show_title, list) else bool(show_title)
+        show_grid = bool(show_grid and show_grid[0]) if isinstance(show_grid, list) else bool(show_grid)
 
         if not curve_data:
             empty_fig = go.Figure()
@@ -233,11 +237,27 @@ def register_callbacks(app):
                 if custom_points:
                     title_text += f' | Точек: {len(custom_points)}'
 
+            # Формируем настройки осей с учётом сетки
+            xaxis_layout = dict(
+                title='Срок до погашения, лет',
+                showgrid=show_grid,
+                gridwidth=1,
+                gridcolor='lightgray',
+                griddash='solid'
+            )
+            yaxis_layout = dict(
+                title='Доходность, % годовых',
+                range=y_range,
+                showgrid=show_grid,
+                gridwidth=1,
+                gridcolor='lightgray',
+                griddash='solid'
+            )
+
             fig_main.update_layout(
                 title=title_text,
-                xaxis_title='Срок до погашения, лет',
-                yaxis_title='Доходность, % годовых',
-                yaxis=dict(range=y_range),
+                xaxis=xaxis_layout,
+                yaxis=yaxis_layout,
                 hovermode='closest',
                 showlegend=show_legend,
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
