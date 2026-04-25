@@ -267,9 +267,26 @@ def create_layout():
                         ])
                     ], className="mb-4"),
 
-                    # Параметры модели ZCYC (раскомментировано)
+                    # ========== НОВЫЙ ПОРЯДОК: сначала формула, потом параметры MOEX, потом константы ==========
+
+                    # 1. Справочная информация о формуле ZCYC (текстовый вариант)
                     dbc.Card([
-                        dbc.CardHeader("Параметры модели ZCYC", className="bg-warning text-dark"),
+                        dbc.CardHeader("📐 Модель кривой ZCYC", className="bg-light text-dark"),
+                        dbc.CardBody([
+                            html.P([
+                                "Доходность для срока t (лет): ",
+                                html.Strong("Y(t) = 100·(e^{G(t)} - 1)"),
+                                html.Br(),
+                                "где G(t) = β₀ + β₁·(τ/t)·(1 - e^{-t/τ}) + β₂·[(τ/t)·(1 - e^{-t/τ}) - e^{-t/τ}] + Σ_{i=1}^{9} gᵢ·exp(-(t - aᵢ)² / bᵢ²)",
+                                html.Br(),
+                                "β₀,β₁,β₂,τ,g₁…g₉ – параметры MOEX;  aᵢ,bᵢ – фиксированные константы (см. таблицу ниже)."
+                            ], className="text-muted", style={"fontSize": "12px", "lineHeight": "1.4"})
+                        ])
+                    ], className="mb-4"),
+
+                    # 2. Параметры модели ZCYC с MOEX (β₀, β₁, β₂, τ, g₁…g₉)
+                    dbc.Card([
+                        dbc.CardHeader("Параметры модели ZCYC (MOEX)", className="bg-warning text-dark"),
                         dbc.CardBody([
                             dash_table.DataTable(
                                 id='params-table',
@@ -279,9 +296,40 @@ def create_layout():
                                     # ,
                                     # {"name": "Описание", "id": "description"}
                                 ],
-                                data=[],  # будет заполнено колбэком
+                                data=[],  # будет заполнено колбэком update_data
                                 style_cell={'textAlign': 'left', 'padding': '10px', 'fontSize': '12px'},
                                 style_header={'backgroundColor': '#ffc107', 'fontWeight': 'bold'},
+                                style_data_conditional=[
+                                    {'if': {'row_index': 'odd'}, 'backgroundColor': 'rgb(248, 248, 248)'}
+                                ]
+                            )
+                        ])
+                    ], className="mb-4"),
+
+                    # 3. Фиксированные константы aᵢ и bᵢ (i=1..9)
+                    dbc.Card([
+                        dbc.CardHeader("Фиксированные константы aᵢ, bᵢ", className="bg-secondary text-white"),
+                        dbc.CardBody([
+                            dash_table.DataTable(
+                                id='constants-table',
+                                columns=[
+                                    {"name": "i", "id": "i"},
+                                    {"name": "aᵢ", "id": "a"},
+                                    {"name": "bᵢ", "id": "b"}
+                                ],
+                                data=[
+                                    {"i": 1, "a": 0.0, "b": 0.6},
+                                    {"i": 2, "a": 0.6, "b": 0.96},
+                                    {"i": 3, "a": 2.2, "b": 1.536},
+                                    {"i": 4, "a": 5.4, "b": 2.4576},
+                                    {"i": 5, "a": 12.0, "b": 3.93216},
+                                    {"i": 6, "a": 25.0, "b": 6.291456},
+                                    {"i": 7, "a": 50.6, "b": 10.0663296},
+                                    {"i": 8, "a": 101.4, "b": 16.10612736},
+                                    {"i": 9, "a": 202.8, "b": 25.76980378}
+                                ],
+                                style_cell={'textAlign': 'center', 'padding': '6px', 'fontSize': '11px'},
+                                style_header={'backgroundColor': '#6c757d', 'color': 'white', 'fontWeight': 'bold'},
                                 style_data_conditional=[
                                     {'if': {'row_index': 'odd'}, 'backgroundColor': 'rgb(248, 248, 248)'}
                                 ]
@@ -291,7 +339,7 @@ def create_layout():
                 ], style=SIDEBAR_STYLE)
             ], width=3),
 
-            # Правая часть (основной контент)
+            # Правая часть (основной контент) - без изменений
             dbc.Col([
                 # Основной график
                 dbc.Card([
@@ -333,7 +381,7 @@ def create_layout():
                     ])
                 ], className="mb-4"),
 
-                # Блок: Пользовательские точки (таблица с возможностью выбора и редактирования названия)
+                # Блок: Пользовательские точки (таблица)
                 dbc.Row([
                     dbc.Col([
                         dbc.Card([
