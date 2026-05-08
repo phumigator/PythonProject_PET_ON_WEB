@@ -267,8 +267,6 @@ def create_layout():
                         ])
                     ], className="mb-4"),
 
-                    # ========== НОВЫЙ ПОРЯДОК: сначала формула, потом параметры MOEX, потом константы ==========
-
                     # 1. Справочная информация о формуле ZCYC (текстовый вариант)
                     dbc.Card([
                         dbc.CardHeader("📐 Модель кривой ZCYC", className="bg-light text-dark"),
@@ -293,8 +291,7 @@ def create_layout():
                                 columns=[
                                     {"name": "Параметр", "id": "parameter"},
                                     {"name": "Значение", "id": "value"}
-                                    # ,
-                                    # {"name": "Описание", "id": "description"}
+                                    # , {"name": "Описание", "id": "description"}
                                 ],
                                 data=[],  # будет заполнено колбэком update_data
                                 style_cell={'textAlign': 'left', 'padding': '10px', 'fontSize': '12px'},
@@ -393,7 +390,7 @@ def create_layout():
                                         {"name": "ID", "id": "ID", "editable": False},
                                         {"name": "Название", "id": "Название", "editable": True},
                                         {"name": "Срок (лет)", "id": "Срок (лет)", "editable": False},
-                                        {"name": "Доходность (%)", "id": "Доходность (%)", "editable": False}
+                                        {"name": "Доходность (%)", "id": "Доходность (%)", "editable": True}   # <-- изменено
                                     ],
                                     page_size=10,
                                     style_table={'overflowX': 'auto', 'height': '400px', 'overflowY': 'auto'},

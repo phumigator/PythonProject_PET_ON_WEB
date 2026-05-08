@@ -14,7 +14,7 @@ POINTS_TABLE_COLUMNS = [
     {"name": "ID", "id": "ID", "editable": False},
     {"name": "Название", "id": "Название", "editable": True},
     {"name": "Срок (лет)", "id": "Срок (лет)", "editable": False},
-    {"name": "Доходность (%)", "id": "Доходность (%)", "editable": False}
+    {"name": "Доходность (%)", "id": "Доходность (%)", "editable": True}
 ]
 
 
@@ -202,7 +202,7 @@ def register_callbacks(app):
          State('custom-points-store', 'data')],
         prevent_initial_call=True
     )
-    def edit_point_name(new_table_data, old_table_data, current_points):
+    def edit_point_cell(new_table_data, old_table_data, current_points):
         ctx = callback_context
         if not ctx.triggered or not old_table_data or not current_points:
             return no_update, no_update, no_update
@@ -219,9 +219,21 @@ def register_callbacks(app):
             if point_id not in id_to_idx:
                 continue
             idx = id_to_idx[point_id]
+
+            # Изменение названия
             if old_row['Название'] != new_row['Название']:
                 new_points[idx]['name'] = new_row['Название']
                 changed = True
+
+            # Изменение доходности
+            if old_row['Доходность (%)'] != new_row['Доходность (%)']:
+                try:
+                    new_yield = float(new_row['Доходность (%)'])
+                    new_points[idx]['yield'] = new_yield
+                    changed = True
+                except ValueError:
+                    # Если введено не число – откатываем изменение
+                    return no_update, no_update, no_update
 
         if not changed:
             return no_update, no_update, no_update
