@@ -23,7 +23,7 @@ def create_layout():
         # Заголовок
         dbc.Row([
             dbc.Col([
-                html.H1("📊 ZCYC Dashboard + Облигации по ИНН",
+                html.H1("📊 КБД + Облигации по ИНН",
                         className="text-center mb-4",
                         style={'color': '#2c3e50'})
             ], width=12)
